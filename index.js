@@ -53,4 +53,4 @@ function changeBoardColor(from, to) {
     })
 }
 
-changeBoardColor('blue', 'green')
+changeBoardColor('green', 'yellow')
