@@ -44,3 +44,13 @@ function cellsEventListener() {
         })
     })
 }
+
+function changeBoardColor(from, to) {
+    cells.map((v,i)=>{
+        v.querySelector('.middle-cell').style.backgroundColor = from
+        v.style.backgroundColor = to
+        
+    })
+}
+
+changeBoardColor('blue', 'green')
