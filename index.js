@@ -12,8 +12,13 @@ cellsEventListener()
 
 
 function makeMove(cellNumber,value) {
-    cells[cellNumber].querySelector('.cell').innerHTML= value
-    cells[cellNumber].querySelector('.cell').style.fontSize = '120px'
+    if(!cells[cellNumber].querySelector('.cell').innerHTML) {
+        cells[cellNumber].querySelector('.cell').innerHTML= value
+        cells[cellNumber].querySelector('.cell').style.fontSize = '120px'
+        return true
+    }
+
+    return false
 }
 
 function createCells() {
@@ -38,15 +43,17 @@ function cellsEventListener() {
     cells.map((v,i)=>{
         v.querySelector('.cell').addEventListener('click',()=>{
             if(currentStatus===gameStatus.playing) {
-                makeMove(i,myMark)
-                v.querySelector('.cell').style.color = myColor
-                currentStatus = gameStatus.waiting
-                showMessage('Waiting other player')
+                if (makeMove(i,myMark)) {
+                    v.querySelector('.cell').style.color = myColor
+                    currentStatus = gameStatus.waiting
+                    showMessage('Waiting other player')
+                }
             } else if (currentStatus === gameStatus.waiting) {
-                makeMove(i,ohterMark)
-                v.querySelector('.cell').style.color = otherColor
-                currentStatus = gameStatus.playing
-                showMessage('It is your turn')
+                if(makeMove(i,ohterMark)){
+                    v.querySelector('.cell').style.color = otherColor
+                    currentStatus = gameStatus.playing
+                    showMessage('It is your turn')
+                }
             }
         })
     })
