@@ -97,3 +97,10 @@ main {
         flex-direction: row;
     }
 }
+
+.rules {
+    width: 306px;
+    height: 306px;
+    box-shadow: 5px 5px 2px gray;
+    margin: 10px 0;
+}
