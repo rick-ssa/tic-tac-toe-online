@@ -1,9 +1,10 @@
 const gameStatus = {playing:0, stoped:1, paused:2, waiting:3, over: 4}
 
 let currentStatus = gameStatus.playing
-let myMark = '&times;'
+let myMark = 'X'
 let myColor = 'blue'
 let otherColor = 'orange'
+let ohterMark = 'O'
 
 const cells = createCells()
 
@@ -38,8 +39,14 @@ function cellsEventListener() {
         v.querySelector('.cell').addEventListener('click',()=>{
             if(currentStatus===gameStatus.playing) {
                 makeMove(i,myMark)
-                v.querySelector('.cell').style.color = otherColor
+                v.querySelector('.cell').style.color = myColor
                 currentStatus = gameStatus.waiting
+                showMessage('Waiting other player')
+            } else if (currentStatus === gameStatus.waiting) {
+                makeMove(i,ohterMark)
+                v.querySelector('.cell').style.color = otherColor
+                currentStatus = gameStatus.playing
+                showMessage('It is your turn')
             }
         })
     })
@@ -63,4 +70,9 @@ function changeBoardColor(from, to) {
     })
 }
 
-changeBoardColor('green', 'yellow')
+function showMessage(text) {
+    messageBar = document.querySelector('.message-bar')
+    messageBar.innerHTML = text
+}
+
+changeBoardColor('green', 'red')
