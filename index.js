@@ -47,9 +47,19 @@ function cellsEventListener() {
 
 function changeBoardColor(from, to) {
     cells.map((v,i)=>{
-        v.querySelector('.middle-cell').style.backgroundColor = from
+        let middle = v.querySelector('.middle-cell')
+
+        middle.style.backgroundColor = from
+        middle.style.width = '120px'
+        middle.style.height = '120px'
         v.style.backgroundColor = to
-        
+        middle.classList.add('animate-board')
+        setTimeout(()=>{
+            middle.style.backgroundColor = to
+            if(middle.classList.contains('animate-board')) {
+                middle.classList.remove('animate-board')
+            }
+        },2000)
     })
 }
 
