@@ -8,6 +8,8 @@ let otherMark = 'O'
 
 const cells = createCells()
 
+const luckNumbers = [7, 56, 73, 84, 146, 273, 292, 448]
+
 cellsEventListener()
 
 function setGameStatus(status) {
@@ -28,6 +30,8 @@ function setGameStatus(status) {
             showMessage(`Waiting Player ${otherMark} play`)
             currentStatus = gameStatus.waiting
             break;
+        case gameStatus.stoped:
+            break;
     }
 }
 
@@ -42,9 +46,11 @@ function makeMove(cellNumber,value) {
 }
 
 function madeMove(player) {
-    if(playerWin(player)) {
+    let luckNumber = playerWin(player)
+    if(luckNumber) {
         showMessage(`Player ${player} Won`)
         setGameStatus(gameStatus.over)
+        winnerCellsAnimation(luckNumber)
     } else {
         if(currentStatus === gameStatus.playing) {
             setGameStatus(gameStatus.waiting)
@@ -124,15 +130,13 @@ function playerWin(player) {
 
         return result
     },0)
-
-    const luckNumbers = [7, 56, 73, 84, 146, 273, 292, 448]
     
-    let res = luckNumbers.reduce((isWinner,number)=>{
-        if(isWinner) return true
-        return (number & total) === number
+    let luckNumber = luckNumbers.reduce((winnerNumber,number)=>{
+        if(winnerNumber) return winnerNumber
+        return (number & total) === number ? number : false
     },false)
 
-    return res
+    return luckNumber
 }
 
 function gameFull() {
@@ -153,6 +157,33 @@ function gameFull() {
 
 function resetBoard() {
     cells.map(v => v.querySelector('.cell').innerHTML = '')
+}
+
+function getWinnerCellsIndexes(luckNumber){
+    let numbers = [256, 128, 64, 32, 16, 8, 4, 2, 1]
+    let arrIndex = numbers.reduce((indexes,number)=>{
+        if(number <= luckNumber) {
+            indexes.push(Math.log2(number))
+            luckNumber -= number
+        }
+
+        return indexes
+    },[])
+
+    return arrIndex
+}
+
+function winnerCellsAnimation(luckNumber) {
+    let indexes = getWinnerCellsIndexes(luckNumber)
+    indexes.map((winnerCellIndex,i,array)=>{
+        let cell = cells[winnerCellIndex].querySelector('.cell')
+        let newCell = document.createElement('div')
+        newCell.style.color = cell.style.color
+        newCell.appendChild(document.createTextNode(cell.innerHTML))
+        cell.innerHTML = ''
+        cells[winnerCellIndex].appendChild(newCell)
+        newCell.classList.add('winner-cells')
+    })
 }
 
 changeBoardColor('red', 'green')
