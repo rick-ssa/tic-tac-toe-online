@@ -37,7 +37,7 @@ function setGameStatus(status) {
 
 function makeMove(cellNumber,value) {
     if(!cells[cellNumber].querySelector('.cell').innerHTML) {
-        cells[cellNumber].querySelector('.cell').innerHTML= value
+        cells[cellNumber].querySelector('.cell').innerHTML = value
         cells[cellNumber].querySelector('.cell').style.fontSize = '120px'
         madeMove(value)
         return true
@@ -178,7 +178,7 @@ function winnerCellsAnimation(luckNumber) {
     indexes.map((winnerCellIndex,i,array)=>{
         let cell = cells[winnerCellIndex].querySelector('.cell')
         let newCell = document.createElement('div')
-        newCell.style.color = cell.style.color
+        newCell.style.color = cell.innerHTML === myMark ? myColor : otherColor
         newCell.appendChild(document.createTextNode(cell.innerHTML))
         cell.innerHTML = ''
         cells[winnerCellIndex].appendChild(newCell)
