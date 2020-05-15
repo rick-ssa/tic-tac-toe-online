@@ -4,21 +4,58 @@ let currentStatus = gameStatus.playing
 let myMark = 'X'
 let myColor = 'blue'
 let otherColor = 'orange'
-let ohterMark = 'O'
+let otherMark = 'O'
 
 const cells = createCells()
 
 cellsEventListener()
 
+function setGameStatus(status) {
+    switch(status) {
+        case gameStatus.playing:
+            showMessage('It is your turn!!!')
+            currentStatus = gameStatus.playing
+            break;
+        case gameStatus.over:
+            changeBoardColor('green','red')
+            currentStatus = gameStatus.over
+            break;
+        case gameStatus.paused:
+            showMessage('Game is paused')
+            currentStatus = gameStatus.paused
+            break;
+        case gameStatus.waiting:
+            showMessage(`Waiting Player ${otherMark} play`)
+            currentStatus = gameStatus.waiting
+            break;
+    }
+}
 
 function makeMove(cellNumber,value) {
     if(!cells[cellNumber].querySelector('.cell').innerHTML) {
         cells[cellNumber].querySelector('.cell').innerHTML= value
         cells[cellNumber].querySelector('.cell').style.fontSize = '120px'
+        madeMove(value)
         return true
     }
-
     return false
+}
+
+function madeMove(player) {
+    if(playerWin(player)) {
+        showMessage(`Player ${player} Won`)
+        setGameStatus(gameStatus.over)
+    } else {
+        if(currentStatus === gameStatus.playing) {
+            setGameStatus(gameStatus.waiting)
+        } else if(currentStatus === gameStatus.waiting) {
+            setGameStatus(gameStatus.playing)
+        }
+        if(gameFull()) {
+            showMessage ('Game is Tied')
+            setGameStatus(gameStatus.over)
+        }
+    }
 }
 
 function createCells() {
@@ -45,14 +82,10 @@ function cellsEventListener() {
             if(currentStatus===gameStatus.playing) {
                 if (makeMove(i,myMark)) {
                     v.querySelector('.cell').style.color = myColor
-                    currentStatus = gameStatus.waiting
-                    showMessage('Waiting other player')
                 }
             } else if (currentStatus === gameStatus.waiting) {
-                if(makeMove(i,ohterMark)){
+                if(makeMove(i,otherMark)){
                     v.querySelector('.cell').style.color = otherColor
-                    currentStatus = gameStatus.playing
-                    showMessage('It is your turn')
                 }
             }
         })
@@ -82,4 +115,44 @@ function showMessage(text) {
     messageBar.innerHTML = text
 }
 
-changeBoardColor('green', 'red')
+function playerWin(player) {
+    let total = cells.reduce((result,wrap,index)=>{
+        if(wrap.querySelector('.cell').innerHTML === player) {
+            result += Math.pow(2,index)
+            return result
+        }
+
+        return result
+    },0)
+
+    const luckNumbers = [7, 56, 73, 84, 146, 273, 292, 448]
+    
+    let res = luckNumbers.reduce((isWinner,number)=>{
+        if(isWinner) return true
+        return (number & total) === number
+    },false)
+
+    return res
+}
+
+function gameFull() {
+    let total = cells.reduce((sum, wrap)=>{
+        if(wrap.querySelector('.cell').innerHTML) {
+            return sum + 1
+        } else {
+            return sum
+        }
+    },0)
+
+    if(total===9) {
+        return true
+    }
+    
+    return false
+}
+
+function resetBoard() {
+    cells.map(v => v.querySelector('.cell').innerHTML = '')
+}
+
+changeBoardColor('red', 'green')
