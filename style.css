@@ -16,13 +16,11 @@
     width:120px;
     height: 120px;
     background-color: white /* linear-gradient(red,white, red,white);*/;
-    
-    
     border-radius: 0;
 }
 
 .animate-board {
-    animation: spin 2s forwards;
+    animation: spin 1s forwards;
 }
 
 @keyframes spin {
