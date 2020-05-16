@@ -1,0 +1,19 @@
+{
+  "name": "tictactoeonline",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:rick-ssa/tic-tac-toe-online.git",
+  "author": "rick-ssa <rick_ssa@hotmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.17.1",
+    "socket.io": "^2.3.0"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
+  }
+}
