@@ -9,8 +9,27 @@ const io = socketio(server)
 
 app.use(express.static(path.join(__dirname, 'public')))
 
+const gameDefinitions = {playerX:0, playerO:0}
+
 io.on('connection',socket=>{
-    console.log(`connected ${socket.id}`)
+    if(gameDefinitions.playerX===0) {
+        gameDefinitions.playerX = socket.id
+        socket.emit('definition','X')
+    } else if (gameDefinitions.playerO===0) {
+        gameDefinitions.playerO = socket.id
+        socket.emit('definition','O')
+        io.emit('gameStatus','start')
+    }
+
+    console.log(gameDefinitions.playerX, gameDefinitions.playerO)
+    socket.on('gameMove',(move)=>{
+        if(move.value = 'X') {
+            socket.broadcast.emit('gameMove',move)
+        } else {
+            console.log(socket.id)
+            socket.broadcast.emit('gameMove',move)
+        }
+    })
 })
 
 const PORT = 3000 || process.env.PORT

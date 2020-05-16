@@ -1,11 +1,11 @@
-const gameStatus = {playing:0, stoped:1, paused:2, waiting:3, over: 4}
+const gameStatus = {playing:0, initiating:1, paused:2, waiting:3, over: 4}
 const socket = io()
 
-let currentStatus = gameStatus.playing
-let myMark = 'X'
+let currentStatus = gameStatus.initiating
+let myMark = ''
 let myColor = 'blue'
 let otherColor = 'orange'
-let otherMark = 'O'
+let otherMark = ''
 
 const cells = createCells()
 
@@ -31,20 +31,40 @@ function setGameStatus(status) {
             showMessage(`Waiting Player ${otherMark} play`)
             currentStatus = gameStatus.waiting
             break;
-        case gameStatus.stoped:
+        case gameStatus.initiating:
+            changeBoardColor('green','red')
             break;
     }
 }
 
-function makeMove(cellNumber,value) {
+function makeMove(cellNumber,value, color) {
     if(!cells[cellNumber].querySelector('.cell').innerHTML) {
         cells[cellNumber].querySelector('.cell').innerHTML = value
         cells[cellNumber].querySelector('.cell').style.fontSize = '120px'
+        cells[cellNumber].querySelector('.cell').style.color = color
         madeMove(value)
         return true
     }
     return false
 }
+
+socket.on('gameMove',(move)=>{
+    makeMove(move.cellNumber,otherMark,otherColor)
+})
+
+socket.on('definition',mark=>{
+    myMark=mark
+    otherMark = myMark === 'X' ? 'O' : 'X'
+})
+
+socket.on('gameStatus',status=>{
+    switch(status) {
+        case 'start':
+            myMark === 'X' ? setGameStatus(gameStatus.playing) : setGameStatus(gameStatus.waiting)
+            changeBoardColor('red','green')
+            break;
+    }
+})
 
 function madeMove(player) {
     let luckNumber = playerWin(player)
@@ -87,14 +107,10 @@ function cellsEventListener() {
     cells.map((v,i)=>{
         v.querySelector('.cell').addEventListener('click',()=>{
             if(currentStatus===gameStatus.playing) {
-                if (makeMove(i,myMark)) {
-                    v.querySelector('.cell').style.color = myColor
+                if (makeMove(i,myMark,myColor)) {
+                    socket.emit('gameMove',{cellNumber: i,value: myMark})
                 }
-            } else if (currentStatus === gameStatus.waiting) {
-                if(makeMove(i,otherMark)){
-                    v.querySelector('.cell').style.color = otherColor
-                }
-            }
+            } 
         })
     })
 }
@@ -176,10 +192,10 @@ function getWinnerCellsIndexes(luckNumber){
 
 function winnerCellsAnimation(luckNumber) {
     let indexes = getWinnerCellsIndexes(luckNumber)
-    indexes.map((winnerCellIndex,i,array)=>{
+    indexes.map((winnerCellIndex)=>{
         let cell = cells[winnerCellIndex].querySelector('.cell')
         let newCell = document.createElement('div')
-        newCell.style.color = cell.innerHTML === myMark ? myColor : otherColor
+        newCell.style.color = cell.style.color
         newCell.appendChild(document.createTextNode(cell.innerHTML))
         cell.innerHTML = ''
         cells[winnerCellIndex].appendChild(newCell)
@@ -187,4 +203,4 @@ function winnerCellsAnimation(luckNumber) {
     })
 }
 
-changeBoardColor('red', 'green')
+changeBoardColor('red', 'red')
