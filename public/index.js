@@ -68,7 +68,7 @@ socket.on('gameStatus',status=>{
 
 function madeMove(player) {
     let luckNumber = playerWin(player)
-    if(luckNumber) {
+    if(luckNumber>0) {
         showMessage(`Player ${player} Won`)
         setGameStatus(gameStatus.over)
         winnerCellsAnimation(luckNumber)
